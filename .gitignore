@@ -1,0 +1,23 @@
+# Local environment
+.env
+.env.*
+!.env.example
+
+# Local Kubernetes access material
+.kube/
+*.kubeconfig
+kubeconfig
+
+# Raw or decrypted secrets must not be committed
+*.secret.yaml
+*.secrets.yaml
+*.decrypted.yaml
+*.unsealed.yaml
+*.dec.yaml
+secrets/
+decrypted-secrets/
+
+# Editors and OS files
+*~
+*.swp
+.DS_Store
