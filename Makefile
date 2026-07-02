@@ -11,3 +11,17 @@ ensure-namespace:
 
 server-dry-run:
 	kustomize build apps/ainulindale-api/overlays/prod | kubectl apply --server-side --dry-run=server -f -
+
+.PHONY: validate-argocd-application apply-argocd-application argocd-status
+
+KUBECTL ?= kubectl
+
+validate-argocd-application:
+	scripts/validate-argocd-application.sh
+
+apply-argocd-application:
+	$(KUBECTL) apply -f argocd/ainulindale-api-application.yaml
+
+argocd-status:
+	KUBECTL="$(KUBECTL)" scripts/wait-argocd-ainulindale-api.sh
+
