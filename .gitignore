@@ -21,3 +21,15 @@ decrypted-secrets/
 *~
 *.swp
 .DS_Store
+
+# Chunk 7 / Sealed Secrets safety: never commit private key backups or plaintext secret material.
+main.key
+*.key
+*.private.pem
+sealed-secrets-master-key-*.yaml
+plain-secret*.yaml
+unsealed-secret*.yaml
+*.unsealed.yaml
+.scratch/
+.secret-values/
+
