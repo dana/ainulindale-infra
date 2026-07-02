@@ -1,0 +1,38 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ainulindale-api
+  namespace: ainulindale-api
+  labels:
+    app.kubernetes.io/name: ainulindale-api
+    app.kubernetes.io/instance: ainulindale-api
+    app.kubernetes.io/component: api
+    app.kubernetes.io/part-of: ainulindale
+spec:
+  ingressClassName: public
+  tls:
+    - hosts:
+        - diederich.ai
+        - www.diederich.ai
+      secretName: diederich-tls-secret
+  rules:
+    - host: diederich.ai
+      http:
+        paths:
+          - path: /api/v1
+            pathType: Prefix
+            backend:
+              service:
+                name: ainulindale-api
+                port:
+                  number: 80
+    - host: www.diederich.ai
+      http:
+        paths:
+          - path: /api/v1
+            pathType: Prefix
+            backend:
+              service:
+                name: ainulindale-api
+                port:
+                  number: 80

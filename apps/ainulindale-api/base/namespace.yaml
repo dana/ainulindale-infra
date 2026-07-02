@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ainulindale-api
+  labels:
+    app.kubernetes.io/name: ainulindale-api
+    app.kubernetes.io/part-of: ainulindale
+
