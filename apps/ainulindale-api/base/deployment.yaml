@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ainulindale-api
+  namespace: ainulindale-api
+  labels:
+    app.kubernetes.io/name: ainulindale-api
+    app.kubernetes.io/instance: ainulindale-api
+    app.kubernetes.io/component: api
+    app.kubernetes.io/part-of: ainulindale
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ainulindale-api
+      app.kubernetes.io/instance: ainulindale-api
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: ainulindale-api
+        app.kubernetes.io/instance: ainulindale-api
+        app.kubernetes.io/component: api
+        app.kubernetes.io/part-of: ainulindale
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: ainulindale-api
+          image: ghcr.io/dana/ainulindale-api:manual-sha-placeholder
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 2
+            timeoutSeconds: 2
+            failureThreshold: 30
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL

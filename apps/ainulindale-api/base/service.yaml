@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ainulindale-api
+  namespace: ainulindale-api
+  labels:
+    app.kubernetes.io/name: ainulindale-api
+    app.kubernetes.io/instance: ainulindale-api
+    app.kubernetes.io/component: api
+    app.kubernetes.io/part-of: ainulindale
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: ainulindale-api
+    app.kubernetes.io/instance: ainulindale-api
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP

@@ -1,0 +1,8 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- ../../base
+images:
+- name: ghcr.io/dana/ainulindale-api
+  newName: ghcr.io/dana/ainulindale-api
+  newTag: d0db27eb8c29f95109f96fe207c9917b837af340
