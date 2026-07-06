@@ -5,4 +5,4 @@ resources:
 images:
 - name: ghcr.io/dana/ainulindale-api
   newName: ghcr.io/dana/ainulindale-api
-  newTag: e05bf7020042a138c23cb5f319e9ed6bb9507468
+  newTag: 3ef7ae120d6f072c6097352128b573d27abe0f88
