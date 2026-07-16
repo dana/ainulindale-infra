@@ -8,6 +8,8 @@ metadata:
     app.kubernetes.io/instance: ainulindale-api
     app.kubernetes.io/component: api
     app.kubernetes.io/part-of: ainulindale
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: ainulindale-api-redirect-www-to-apex@kubernetescrd
 spec:
   ingressClassName: public
   tls:
