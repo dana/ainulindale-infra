@@ -1,0 +1,10 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: redirect-www-to-apex
+  namespace: ainulindale-api
+spec:
+  redirectRegex:
+    regex: "^https?://www\\.diederich\\.ai/(.*)"
+    replacement: "https://diederich.ai/${1}"
+    permanent: true

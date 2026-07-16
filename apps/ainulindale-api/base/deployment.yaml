@@ -32,6 +32,16 @@ spec:
             - name: http
               containerPort: 8000
               protocol: TCP
+          envFrom:
+            - secretRef:
+                name: eridian-echo-google-oauth
+          env:
+            - name: ERIDIAN_ECHO_PUBLIC_BASE_URL
+              value: "https://diederich.ai"
+            - name: GOOGLE_OAUTH_REDIRECT_URI
+              value: "https://diederich.ai/api/v1/eridian-echo/auth/google/callback"
+            - name: GOOGLE_OAUTH_SCOPES
+              value: "openid email profile"
           readinessProbe:
             httpGet:
               path: /readyz
