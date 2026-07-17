@@ -1,0 +1,9 @@
+apiVersion: v1
+data:
+  index.html: "<!DOCTYPE html>\n<html>\n<head><title>diederich.ai</title></head>\n\
+    <body>\n  <h1>Welcome to diederich.ai</h1>\n  <p>Static site running on MicroK8s.</p>\n\
+    </body>\n</html>\n"
+kind: ConfigMap
+metadata:
+  name: static-web-content
+  namespace: default

@@ -1,0 +1,33 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: unified-ingress
+  namespace: default
+spec:
+  ingressClassName: public
+  rules:
+  - host: www.diederich.ai
+    http:
+      paths:
+      - backend:
+          service:
+            name: diederich-ai-live-svc
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+  - host: diederich.ai
+    http:
+      paths:
+      - backend:
+          service:
+            name: diederich-ai-live-svc
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - www.diederich.ai
+    - diederich.ai
+    secretName: diederich-tls-secret

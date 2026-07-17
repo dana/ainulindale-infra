@@ -1,0 +1,33 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: michelle-care-ingress
+  namespace: default
+spec:
+  ingressClassName: public
+  rules:
+  - host: michelle.care
+    http:
+      paths:
+      - backend:
+          service:
+            name: michelle-care-svc
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+  - host: www.michelle.care
+    http:
+      paths:
+      - backend:
+          service:
+            name: michelle-care-svc
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - michelle.care
+    - www.michelle.care
+    secretName: michelle-care-tls

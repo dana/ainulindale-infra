@@ -1,0 +1,33 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: static-web
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: static-web
+    app.kubernetes.io/instance: static-web
+    app.kubernetes.io/part-of: ainulindale
+spec:
+  project: ainulindale
+  source:
+    repoURL: https://github.com/dana/ainulindale-infra.git
+    targetRevision: main
+    path: apps/static-web/base
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+      - ApplyOutOfSyncOnly=true
+      - PruneLast=true
+      - ServerSideApply=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
