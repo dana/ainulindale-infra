@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dana-share-ingress
+  namespace: default
+spec:
+  ingressClassName: public
+  rules:
+  - host: diederich.ai
+    http:
+      paths:
+      - backend:
+          service:
+            name: dana-share-svc
+            port:
+              number: 80
+        path: /s
+        pathType: Prefix
+  - host: www.diederich.ai
+    http:
+      paths:
+      - backend:
+          service:
+            name: dana-share-svc
+            port:
+              number: 80
+        path: /s
+        pathType: Prefix
