@@ -4,6 +4,7 @@ metadata:
   name: michelle-care-ingress
   namespace: default
   annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
     traefik.ingress.kubernetes.io/router.middlewares: default-michelle-care-stripprefix@kubernetescrd
 spec:
   ingressClassName: public
@@ -42,5 +43,4 @@ spec:
   - hosts:
     - michelle.care
     - www.michelle.care
-    - michelle.service
     secretName: michelle-care-tls
