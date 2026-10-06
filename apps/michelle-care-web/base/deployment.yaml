@@ -20,40 +20,6 @@ spec:
       labels:
         app: michelle-care-web
     spec:
-      initContainers:
-      - name: setup-sync
-        image: alpine/git:latest
-        command:
-        - /bin/sh
-        - -c
-        - |
-          set -e
-          REPO="/home/michelle/michelle-care"
-          TARGET="/home/michelle/site-root"
-          mkdir -p "$TARGET"
-          
-          if [ -d "$REPO" ]; then
-            git --git-dir="$REPO" --work-tree="$TARGET" checkout -f main || true
-            
-            HOOK_RECEIVE="$REPO/hooks/post-receive"
-            HOOK_UPDATE="$REPO/hooks/post-update"
-            
-            printf '%s\n' \
-              '#!/bin/sh' \
-              'export GIT_DIR=/home/michelle/michelle-care' \
-              'export GIT_WORK_TREE=/home/michelle/site-root' \
-              'mkdir -p "$GIT_WORK_TREE"' \
-              'git checkout -f main' \
-              > "$HOOK_RECEIVE"
-              
-            chmod +x "$HOOK_RECEIVE"
-            cp "$HOOK_RECEIVE" "$HOOK_UPDATE"
-          fi
-        volumeMounts:
-        - mountPath: /home/michelle/michelle-care
-          name: git-repo
-        - mountPath: /home/michelle/site-root
-          name: web-root
       containers:
       - image: nginx:alpine
         imagePullPolicy: IfNotPresent
@@ -77,10 +43,6 @@ spec:
       terminationGracePeriodSeconds: 30
       volumes:
       - hostPath:
-          path: /home/michelle/site-root
+          path: /home/dana/common/sites/michelle.care
           type: DirectoryOrCreate
         name: web-root
-      - hostPath:
-          path: /home/michelle/michelle-care
-          type: Directory
-        name: git-repo
