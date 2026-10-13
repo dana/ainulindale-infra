@@ -1,0 +1,74 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cleanup-test-artifacts
+  namespace: mongodb
+  labels:
+    app.kubernetes.io/name: cleanup-test-artifacts
+    app.kubernetes.io/component: maintenance
+spec:
+  # Run daily at 04:15 UTC
+  schedule: "15 4 * * *"
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: cleanup-test-artifacts
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: mongosh-cleanup
+              image: registry-1.docker.io/bitnami/mongodb:latest
+              command:
+                - /bin/bash
+                - -c
+                - |
+                  set -euo pipefail
+                  echo "Starting automated test artifact cleanup..."
+                  
+                  mongosh "mongodb://mongodb.mongodb.svc.cluster.local:27017" << 'SCRIPT'
+                  // 1. Drop old orphaned test databases matching test_e2e_db_*
+                  const dbs = db.adminCommand({ listDatabases: 1 }).databases;
+                  for (const d of dbs) {
+                    if (d.name.startsWith("test_e2e_db_")) {
+                      console.log("Dropping leftover test database: " + d.name);
+                      db.getSiblingDB(d.name).dropDatabase();
+                    }
+                  }
+
+                  // 2. Clean up test artifacts from ainulindale database
+                  const appDb = db.getSiblingDB("ainulindale");
+
+                  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+                  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
+                  // Delete test jobs older than 7 days (filename starting with livetest-)
+                  const delJobs = appDb.eridian_echo_jobs.deleteMany({
+                    filename: { $regex: "^livetest-" },
+                    created_at: { $lt: sevenDaysAgo }
+                  });
+                  console.log("Deleted old livetest jobs: " + delJobs.deletedCount);
+
+                  // Delete unauthenticated guest sessions older than 30 days that have no jobs
+                  const activeJobOwners = appDb.eridian_echo_jobs.distinct("owner_id");
+                  const delSessions = appDb.eridian_echo_sessions.deleteMany({
+                    is_authenticated: false,
+                    _id: { $nin: activeJobOwners },
+                    principal_id: { $nin: activeJobOwners },
+                    created_at: { $lt: thirtyDaysAgo }
+                  });
+                  console.log("Deleted stale guest sessions: " + delSessions.deletedCount);
+                  SCRIPT
+
+                  echo "Test artifact cleanup completed successfully."
+              resources:
+                requests:
+                  cpu: 25m
+                  memory: 64Mi
+                limits:
+                  cpu: 250m
+                  memory: 256Mi

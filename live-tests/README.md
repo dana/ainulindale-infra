@@ -76,3 +76,13 @@ MICHELLE_SECRET_PATH="/this-secret"
 MINECRAFT_HOST="10.0.0.78"
 MINECRAFT_PORT="25565"
 ```
+
+---
+
+## GitOps Backend Maintenance & Seeding
+
+The cluster backend entities required by this test suite are managed declaratively via GitOps:
+- **`apps/maintenance/base/`**:
+  - `cleanup-cronjob.yaml`: Scheduled daily CronJob in `mongodb` namespace to purge test jobs and stale sessions.
+  - `seed-test-entities-job.yaml`: ArgoCD Sync Hook Job ensuring the synthetic test user and session exist in MongoDB.
+- **`argocd/maintenance-application.yaml`**: ArgoCD Application managing the `maintenance` package on `elwing`.

@@ -13,6 +13,10 @@ spec:
   destinations:
     - server: https://kubernetes.default.svc
       namespace: ainulindale-api
+    - server: https://kubernetes.default.svc
+      namespace: default
+    - server: https://kubernetes.default.svc
+      namespace: mongodb
   clusterResourceWhitelist:
     - group: ""
       kind: Namespace
