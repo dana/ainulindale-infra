@@ -1,0 +1,72 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: seed-test-entities
+  namespace: mongodb
+  labels:
+    app.kubernetes.io/name: seed-test-entities
+    app.kubernetes.io/component: maintenance
+  annotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
+spec:
+  ttlSecondsAfterFinished: 86400
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: seed-test-entities
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: mongosh-seed
+          image: registry-1.docker.io/bitnami/mongodb:latest
+          command:
+            - /bin/bash
+            - -c
+            - |
+              set -euo pipefail
+              echo "Ensuring synthetic test entities in MongoDB..."
+              mongosh "mongodb://mongodb.mongodb.svc.cluster.local:27017" << 'SCRIPT'
+              const appDb = db.getSiblingDB("ainulindale");
+
+              // 1. Idempotently ensure synthetic test user exists
+              const userRes = appDb.eridian_echo_users.updateOne(
+                { _id: "test-synthetic-user-live" },
+                {
+                  $setOnInsert: {
+                    _id: "test-synthetic-user-live",
+                    google_sub: "synthetic-sub-test-runner",
+                    email: "test-runner@diederich.ai",
+                    name: "Live Test Runner",
+                    created_at: new Date("2026-07-28T00:00:00Z")
+                  }
+                },
+                { upsert: true }
+              );
+              console.log("Synthetic test user upserted/matched: " + JSON.stringify(userRes));
+
+              // 2. Idempotently ensure synthetic test session exists
+              const sessionRes = appDb.eridian_echo_sessions.updateOne(
+                { _id: "test-synthetic-session-live" },
+                {
+                  $setOnInsert: {
+                    _id: "test-synthetic-session-live",
+                    principal_id: "test-synthetic-user-live",
+                    is_authenticated: true,
+                    state: null,
+                    nonce: null,
+                    created_at: new Date("2026-07-28T00:00:00Z")
+                  }
+                },
+                { upsert: true }
+              );
+              console.log("Synthetic test session upserted/matched: " + JSON.stringify(sessionRes));
+              SCRIPT
+              echo "Synthetic test entities ensured successfully."
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
