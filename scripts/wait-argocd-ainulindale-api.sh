@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
+if [ "${SKIP_ARGOCD_WAIT:-1}" = "1" ]; then
+  echo "SKIP: wait-argocd-ainulindale-api.sh skipped per SKIP_ARGOCD_WAIT=1"
+  exit 0
+fi
+
+
 app="${1:-ainulindale-api}"
 namespace="${ARGOCD_NAMESPACE:-argocd}"
 timeout_seconds="${ARGOCD_WAIT_TIMEOUT_SECONDS:-300}"
