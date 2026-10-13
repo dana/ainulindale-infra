@@ -30,7 +30,7 @@ spec:
                   set -euo pipefail
                   echo "Starting automated test artifact cleanup..."
                   
-                  mongosh "mongodb://mongodb.mongodb.svc.cluster.local:27017" << SCRIPT
+                  mongosh "mongodb://mongodb.mongodb.svc.cluster.local:27017" << 'SCRIPT'
                   // 1. Drop old orphaned test databases matching test_e2e_db_*
                   const dbs = db.adminCommand({ listDatabases: 1 }).databases;
                   for (const d of dbs) {
