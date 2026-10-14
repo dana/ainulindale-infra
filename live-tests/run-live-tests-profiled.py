@@ -16,10 +16,10 @@ import psutil
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TESTS_DIR = os.path.join(BASE_DIR, "tests")
 VENV_PYTEST = os.path.join(BASE_DIR, ".venv", "bin", "pytest")
-OUTPUT_METRICS_FILE = os.environ.get(
-    "LIVE_TESTS_METRICS_PATH",
-    "/var/lib/node_exporter/textfile_collector/ainulindale_live_tests.prom"
-)
+DEFAULT_METRICS_PATH = "/var/lib/node_exporter/textfile_collector/ainulindale_live_tests.prom"
+FALLBACK_METRICS_PATH = os.path.join(BASE_DIR, "ainulindale_live_tests.prom")
+
+OUTPUT_METRICS_FILE = os.environ.get("LIVE_TESTS_METRICS_PATH", DEFAULT_METRICS_PATH)
 
 def ensure_headless_browser():
     """Ensure headless browser container is started on port 9333 if docker is available."""
@@ -34,7 +34,16 @@ def main():
     ensure_headless_browser()
     os.environ["HEADLESS_CHROME_CDP"] = os.environ.get("HEADLESS_CHROME_CDP", "http://127.0.0.1:9333")
 
-    test_files = sorted(glob.glob(os.path.join(TESTS_DIR, "test_*.py")))
+    # Parse CLI arguments to support targeting specific test files or passing flags
+    raw_args = sys.argv[1:]
+    specified_files = [a for a in raw_args if a.endswith(".py") and os.path.exists(a)]
+    extra_flags = [a for a in raw_args if a not in specified_files]
+
+    if specified_files:
+        test_files = sorted(specified_files)
+    else:
+        test_files = sorted(glob.glob(os.path.join(TESTS_DIR, "test_*.py")))
+
     if not test_files:
         print(f"No test files found in {TESTS_DIR}", file=sys.stderr)
         sys.exit(1)
@@ -61,9 +70,8 @@ def main():
             VENV_PYTEST,
             "-v",
             "--json-report",
-            f"--json-report-file={report_file}",
-            tf
-        ]
+            f"--json-report-file={report_file}"
+        ] + extra_flags + [tf]
 
         start_time = time.time()
         proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -102,7 +110,7 @@ def main():
                 with open(report_file) as rf:
                     data = json.load(rf)
                 for t in data.get("tests", []):
-                    case_name = t["nodeid"].split("::")[-1]
+                    case_name = t["nodeid"].split("::")[-1].replace('"', '\\"')
                     dur = t.get("call", {}).get("duration", t.get("setup", {}).get("duration", 0.0))
                     outcome = t.get("outcome", "unknown")
                     if outcome == "passed":
@@ -206,16 +214,26 @@ def main():
     for tc in test_case_results:
         lines.append(f'ainulindale_live_test_case_duration_seconds{{file="{tc["file"]}",test="{tc["test"]}"}} {tc["duration"]:.4f}')
 
-    # Atomic write to destination file
+    # Atomic write to destination file with fallback on permission errors
     prom_content = "\n".join(lines) + "\n"
-    os.makedirs(os.path.dirname(OUTPUT_METRICS_FILE), exist_ok=True)
-    temp_file = OUTPUT_METRICS_FILE + ".tmp"
-    with open(temp_file, "w") as out:
-        out.write(prom_content)
-    os.replace(temp_file, OUTPUT_METRICS_FILE)
+    target_path = OUTPUT_METRICS_FILE
+    try:
+        os.makedirs(os.path.dirname(target_path), exist_ok=True)
+        temp_file = target_path + ".tmp"
+        with open(temp_file, "w") as out:
+            out.write(prom_content)
+        os.replace(temp_file, target_path)
+    except (PermissionError, OSError) as e:
+        target_path = FALLBACK_METRICS_PATH
+        print(f"Notice: Destination {OUTPUT_METRICS_FILE} not writable ({e}); saving metrics to {target_path}", file=sys.stderr)
+        os.makedirs(os.path.dirname(target_path), exist_ok=True)
+        temp_file = target_path + ".tmp"
+        with open(temp_file, "w") as out:
+            out.write(prom_content)
+        os.replace(temp_file, target_path)
 
     print(f"Live tests completed in {overall_duration:.2f}s. Passed: {total_passed}, Failed: {total_failed}, Skipped: {total_skipped}.")
-    print(f"Prometheus metrics updated in {OUTPUT_METRICS_FILE}")
+    print(f"Prometheus metrics updated in {target_path}")
     sys.exit(0 if all_tests_passed else 1)
 
 if __name__ == "__main__":

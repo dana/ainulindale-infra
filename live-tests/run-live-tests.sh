@@ -34,7 +34,9 @@ export HEADLESS_CHROME_CDP="http://127.0.0.1:${PORT}"
 
 # If --profile is passed or PROFILE_TELEMETRY=1, run via the metrics profiler
 if [ "${1:-}" = "--profile" ] || [ "${PROFILE_TELEMETRY:-0}" = "1" ]; then
-    shift || true
+    if [ "${1:-}" = "--profile" ]; then
+        shift
+    fi
     echo "Running test suite with telemetry profiling and Prometheus metric export..."
     exec "${VENV_DIR}/bin/python3" "${DIR}/run-live-tests-profiled.py" "$@"
 else
