@@ -17,6 +17,8 @@ spec:
       namespace: default
     - server: https://kubernetes.default.svc
       namespace: mongodb
+    - server: https://kubernetes.default.svc
+      namespace: tmtrack
   clusterResourceWhitelist:
     - group: ""
       kind: Namespace

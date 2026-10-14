@@ -1,0 +1,53 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tmtrack-ingress
+  namespace: tmtrack
+  labels:
+    app.kubernetes.io/name: tmtrack
+    app.kubernetes.io/part-of: tmtrack
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    traefik.ingress.kubernetes.io/router.middlewares: tmtrack-redirect-www-to-apex@kubernetescrd,tmtrack-tmtrack-redirect-slash@kubernetescrd,tmtrack-tmtrack-stripprefix@kubernetescrd
+spec:
+  ingressClassName: public
+  tls:
+    - hosts:
+        - diederich.ai
+        - www.diederich.ai
+      secretName: diederich-tls-secret
+  rules:
+    - host: diederich.ai
+      http:
+        paths:
+          - path: /tmtrack/api
+            pathType: Prefix
+            backend:
+              service:
+                name: tmtrack-api
+                port:
+                  number: 80
+          - path: /tmtrack
+            pathType: Prefix
+            backend:
+              service:
+                name: tmtrack-ui
+                port:
+                  number: 80
+    - host: www.diederich.ai
+      http:
+        paths:
+          - path: /tmtrack/api
+            pathType: Prefix
+            backend:
+              service:
+                name: tmtrack-api
+                port:
+                  number: 80
+          - path: /tmtrack
+            pathType: Prefix
+            backend:
+              service:
+                name: tmtrack-ui
+                port:
+                  number: 80

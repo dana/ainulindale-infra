@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+images:
+  - name: ghcr.io/dana/tmtrack
+    newName: ghcr.io/dana/tmtrack
+    newTag: 523fc5213d9d026afa7c31b3bcd7404a7a00ae91
+  - name: ghcr.io/dana/tmtrack-ui
+    newName: ghcr.io/dana/tmtrack-ui
+    newTag: 66e09b64ccba959d708b62efff1effa60ea8ce7f
