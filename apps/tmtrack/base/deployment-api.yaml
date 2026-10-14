@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tmtrack-api
+  namespace: tmtrack
+  labels:
+    app.kubernetes.io/name: tmtrack
+    app.kubernetes.io/component: api
+    app.kubernetes.io/part-of: tmtrack
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: tmtrack
+      app.kubernetes.io/component: api
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: tmtrack
+        app.kubernetes.io/component: api
+        app.kubernetes.io/part-of: tmtrack
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: api
+          image: ghcr.io/dana/tmtrack:placeholder
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 5000
+              protocol: TCP
+          env:
+            - name: MONGO_URI
+              value: mongodb://mongodb.mongodb.svc.cluster.local:27017/
+            - name: MONGO_DB_NAME
+              value: tmtrack_db
+            - name: FLASK_DEBUG
+              value: False
+            - name: FLASK_ENV
+              value: production
+            - name: USER_AUTHENTICATION_FILE
+              value: /etc/tmtrack/auth/user_authentication.json
+            - name: USER_AUTHORIZATION_FILE
+              value: /etc/tmtrack/config/user_authorization.json
+          volumeMounts:
+            - name: auth-secret
+              mountPath: /etc/tmtrack/auth
+              readOnly: true
+            - name: auth-config
+              mountPath: /etc/tmtrack/config
+              readOnly: true
+          readinessProbe:
+            httpGet:
+              path: /api/v1/happy
+              port: http
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /api/v1/happy
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+      volumes:
+        - name: auth-secret
+          secret:
+            secretName: tmtrack-auth
+        - name: auth-config
+          configMap:
+            name: tmtrack-authorization

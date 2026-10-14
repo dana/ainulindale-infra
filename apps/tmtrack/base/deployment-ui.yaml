@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tmtrack-ui
+  namespace: tmtrack
+  labels:
+    app.kubernetes.io/name: tmtrack
+    app.kubernetes.io/component: ui
+    app.kubernetes.io/part-of: tmtrack
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: tmtrack
+      app.kubernetes.io/component: ui
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: tmtrack
+        app.kubernetes.io/component: ui
+        app.kubernetes.io/part-of: tmtrack
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: ui
+          image: ghcr.io/dana/tmtrack-ui:placeholder
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi

@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+images:
+  - name: ghcr.io/dana/tmtrack:placeholder
+    newName: ghcr.io/dana/tmtrack
+    newTag: feat-k8s-gitops-migration
+  - name: ghcr.io/dana/tmtrack-ui:placeholder
+    newName: ghcr.io/dana/tmtrack-ui
+    newTag: feat-k8s-gitops-migration

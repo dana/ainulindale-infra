@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: tmtrack-ui
+  namespace: tmtrack
+  labels:
+    app.kubernetes.io/name: tmtrack
+    app.kubernetes.io/component: ui
+    app.kubernetes.io/part-of: tmtrack
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: tmtrack
+    app.kubernetes.io/component: ui
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP

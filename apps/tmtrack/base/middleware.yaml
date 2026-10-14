@@ -1,0 +1,31 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: tmtrack-redirect-slash
+  namespace: tmtrack
+spec:
+  redirectRegex:
+    regex: '^https?://([^/]+)/tmtrack$'
+    replacement: 'https://${1}/tmtrack/'
+    permanent: true
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: tmtrack-stripprefix
+  namespace: tmtrack
+spec:
+  stripPrefix:
+    prefixes:
+      - /tmtrack
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: redirect-www-to-apex
+  namespace: tmtrack
+spec:
+  redirectRegex:
+    regex: '^https?://www\.diederich\.ai/(.*)'
+    replacement: 'https://diederich.ai/${1}'
+    permanent: true
