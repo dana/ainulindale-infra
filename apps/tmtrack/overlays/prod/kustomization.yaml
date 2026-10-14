@@ -3,9 +3,9 @@ kind: Kustomization
 resources:
   - ../../base
 images:
-  - name: ghcr.io/dana/tmtrack:placeholder
+  - name: ghcr.io/dana/tmtrack
     newName: ghcr.io/dana/tmtrack
-    newTag: feat-k8s-gitops-migration
-  - name: ghcr.io/dana/tmtrack-ui:placeholder
+    newTag: 42858476a6cf490aa1578f5fef87208f7ce00431
+  - name: ghcr.io/dana/tmtrack-ui
     newName: ghcr.io/dana/tmtrack-ui
-    newTag: feat-k8s-gitops-migration
+    newTag: 3a035afaf230873e21013444fc27b9500c28373d
