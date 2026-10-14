@@ -1,0 +1,58 @@
+groups:
+- name: ainulindale-live-tests
+  rules:
+  - alert: AinulindaleLiveTestSuiteFailed
+    expr: ainulindale_live_test_suite_status == 0
+    for: 1m
+    labels:
+      environment: Production
+      service: AinulindaleLiveTests
+      severity: critical
+      resource: elwing:ainulindale:live-tests
+      event: AinulindaleLiveTestSuiteFailed
+    annotations:
+      grafana: http://192.168.1.247:3000/d/ainulindale-live-tests?viewPanel=1
+      summary: Ainulindale production live test suite has FAILED
+      description: Live end-to-end tests executed on elwing reported one or more test
+        failures.
+  - alert: AinulindaleLiveTestModuleFailed
+    expr: ainulindale_live_test_file_status == 0
+    for: 1m
+    labels:
+      environment: Production
+      service: AinulindaleLiveTests
+      severity: major
+      resource: elwing:ainulindale:{{ $labels.file }}
+      event: AinulindaleLiveTestModuleFailed
+    annotations:
+      grafana: http://192.168.1.247:3000/d/ainulindale-live-tests?viewPanel=10
+      summary: Ainulindale live test file {{ $labels.file }} failed
+      description: Live test module {{ $labels.file }} on elwing encountered failures.
+  - alert: AinulindaleLiveTestCaseFailed
+    expr: ainulindale_live_test_case_status == 0
+    for: 1m
+    labels:
+      environment: Production
+      service: AinulindaleLiveTests
+      severity: major
+      resource: elwing:ainulindale:{{ $labels.file }}:{{ $labels.test }}
+      event: AinulindaleLiveTestCaseFailed
+    annotations:
+      grafana: http://192.168.1.247:3000/d/ainulindale-live-tests?viewPanel=15
+      summary: Live test case {{ $labels.test }} failed in {{ $labels.file }}
+      description: Individual test case {{ $labels.test }} failed during scheduled
+        execution on elwing.
+  - alert: AinulindaleLiveTestsStale
+    expr: (time() - ainulindale_live_test_suite_last_timestamp) > 1200
+    for: 2m
+    labels:
+      environment: Production
+      service: AinulindaleLiveTests
+      severity: warning
+      resource: elwing:ainulindale:timer
+      event: AinulindaleLiveTestsStale
+    annotations:
+      grafana: http://192.168.1.247:3000/d/ainulindale-live-tests
+      summary: Ainulindale live tests have not run in >20 minutes
+      description: The 10-minute systemd timer on elwing has not updated test telemetry
+        recently.
