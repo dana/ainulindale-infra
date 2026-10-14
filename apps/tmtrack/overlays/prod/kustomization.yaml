@@ -5,7 +5,7 @@ resources:
 images:
   - name: ghcr.io/dana/tmtrack
     newName: ghcr.io/dana/tmtrack
-    newTag: 42858476a6cf490aa1578f5fef87208f7ce00431
+    newTag: 523fc5213d9d026afa7c31b3bcd7404a7a00ae91
   - name: ghcr.io/dana/tmtrack-ui
     newName: ghcr.io/dana/tmtrack-ui
-    newTag: 3a035afaf230873e21013444fc27b9500c28373d
+    newTag: 66e09b64ccba959d708b62efff1effa60ea8ce7f
