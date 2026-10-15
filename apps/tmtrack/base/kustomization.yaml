@@ -4,6 +4,7 @@ resources:
   - namespace.yaml
   - configmap.yaml
   - sealedsecret.yaml
+  - google-oauth-sealedsecret.yaml
   - deployment-api.yaml
   - service-api.yaml
   - deployment-ui.yaml
