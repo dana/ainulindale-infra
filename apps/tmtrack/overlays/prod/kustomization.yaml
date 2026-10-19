@@ -8,4 +8,4 @@ images:
   newTag: 68e65398e7fcdbb72007a559dd6a0d21981d4e08
 - name: ghcr.io/dana/tmtrack-ui
   newName: ghcr.io/dana/tmtrack-ui
-  newTag: 3e6dede0b1df6bf02b0973bda09afdeaf1f1339e
+  newTag: 1a305b655b5bfd870fbca4e2e7023dc36ddddc2a
