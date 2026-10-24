@@ -42,6 +42,10 @@ spec:
               value: "https://diederich.ai/api/v1/eridian-echo/auth/google/callback"
             - name: GOOGLE_OAUTH_SCOPES
               value: "openid email profile"
+            - name: HOME_GOOGLE_OAUTH_REDIRECT_URI
+              value: "https://diederich.ai/home/auth/google/callback"
+            - name: HOME_ALLOWLIST_EMAILS
+              value: "diederich@gmail.com,msdiederich@gmail.com"
           readinessProbe:
             httpGet:
               path: /readyz
