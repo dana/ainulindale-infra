@@ -46,6 +46,14 @@ spec:
               value: "https://diederich.ai/home/auth/google/callback"
             - name: HOME_ALLOWLIST_EMAILS
               value: "diederich@gmail.com,msdiederich@gmail.com"
+            - name: HOME_COMMON_DIR
+              value: "/data/home-common"
+            - name: HOME_ALERTA_UPSTREAM_URL
+              value: "http://192.168.1.247:8080"
+          volumeMounts:
+            - name: home-common-data
+              mountPath: /data/home-common
+              readOnly: true
           readinessProbe:
             httpGet:
               path: /readyz
@@ -80,3 +88,9 @@ spec:
             capabilities:
               drop:
                 - ALL
+      volumes:
+        - name: home-common-data
+          hostPath:
+            path: /home/dana/home-common
+            type: DirectoryOrCreate
+
