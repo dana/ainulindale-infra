@@ -50,6 +50,8 @@ spec:
               value: "/data/home-common"
             - name: HOME_ALERTA_UPSTREAM_URL
               value: "http://192.168.1.247:8080"
+            - name: HOME_ASSISTANT_UPSTREAM_URL
+              value: "http://192.168.1.247:8123"
           volumeMounts:
             - name: home-common-data
               mountPath: /data/home-common
