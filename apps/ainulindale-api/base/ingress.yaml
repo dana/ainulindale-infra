@@ -35,6 +35,48 @@ spec:
                 name: ainulindale-api
                 port:
                   number: 80
+          - path: /api/camera_proxy
+            pathType: Prefix
+            backend:
+              service:
+                name: ainulindale-api
+                port:
+                  number: 80
+          - path: /api/camera_proxy_stream
+            pathType: Prefix
+            backend:
+              service:
+                name: ainulindale-api
+                port:
+                  number: 80
+          - path: /api/image_proxy
+            pathType: Prefix
+            backend:
+              service:
+                name: ainulindale-api
+                port:
+                  number: 80
+          - path: /api/image_proxy_stream
+            pathType: Prefix
+            backend:
+              service:
+                name: ainulindale-api
+                port:
+                  number: 80
+          - path: /live-cameras
+            pathType: Prefix
+            backend:
+              service:
+                name: ainulindale-api
+                port:
+                  number: 80
+          - path: /lovelace
+            pathType: Prefix
+            backend:
+              service:
+                name: ainulindale-api
+                port:
+                  number: 80
     - host: www.diederich.ai
       http:
         paths:
@@ -46,6 +88,48 @@ spec:
                 port:
                   number: 80
           - path: /home
+            pathType: Prefix
+            backend:
+              service:
+                name: ainulindale-api
+                port:
+                  number: 80
+          - path: /api/camera_proxy
+            pathType: Prefix
+            backend:
+              service:
+                name: ainulindale-api
+                port:
+                  number: 80
+          - path: /api/camera_proxy_stream
+            pathType: Prefix
+            backend:
+              service:
+                name: ainulindale-api
+                port:
+                  number: 80
+          - path: /api/image_proxy
+            pathType: Prefix
+            backend:
+              service:
+                name: ainulindale-api
+                port:
+                  number: 80
+          - path: /api/image_proxy_stream
+            pathType: Prefix
+            backend:
+              service:
+                name: ainulindale-api
+                port:
+                  number: 80
+          - path: /live-cameras
+            pathType: Prefix
+            backend:
+              service:
+                name: ainulindale-api
+                port:
+                  number: 80
+          - path: /lovelace
             pathType: Prefix
             backend:
               service:
