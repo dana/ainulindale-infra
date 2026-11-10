@@ -52,10 +52,14 @@ spec:
               value: "http://192.168.1.247:8080"
             - name: HOME_ASSISTANT_UPSTREAM_URL
               value: "http://192.168.1.247:8123"
+            - name: HEALTH_DATA_DIR
+              value: "/data/health-data"
           volumeMounts:
             - name: home-common-data
               mountPath: /data/home-common
               readOnly: true
+            - name: health-data
+              mountPath: /data/health-data
           readinessProbe:
             httpGet:
               path: /readyz
@@ -94,5 +98,9 @@ spec:
         - name: home-common-data
           hostPath:
             path: /home/dana/home-common
+            type: DirectoryOrCreate
+        - name: health-data
+          hostPath:
+            path: /home/dana/health-data
             type: DirectoryOrCreate
 
