@@ -84,6 +84,13 @@ spec:
                 name: ainulindale-api
                 port:
                   number: 80
+          - path: /media
+            pathType: Prefix
+            backend:
+              service:
+                name: ainulindale-api
+                port:
+                  number: 80
     - host: www.diederich.ai
       http:
         paths:
@@ -144,6 +151,13 @@ spec:
                 port:
                   number: 80
           - path: /health
+            pathType: Prefix
+            backend:
+              service:
+                name: ainulindale-api
+                port:
+                  number: 80
+          - path: /media
             pathType: Prefix
             backend:
               service:
