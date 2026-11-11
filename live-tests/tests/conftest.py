@@ -24,6 +24,7 @@ def creds():
     return {
         "api_base_url": os.getenv("API_BASE_URL", "https://diederich.ai").rstrip("/"),
         "grafana_url": os.getenv("GRAFANA_URL", "https://www.diederich.ai/monitoring").rstrip("/"),
+        "central_grafana_url": os.getenv("CENTRAL_GRAFANA_URL", "http://10.0.0.247:3000").rstrip("/"),
         "grafana_token": os.getenv("GRAFANA_TOKEN", ""),
         "eridian_echo_cookie": os.getenv("ERIDIAN_ECHO_AUTH_COOKIE", "test-synthetic-session-live"),
         "gemini_api_key": os.getenv("GEMINI_API_KEY", ""),
