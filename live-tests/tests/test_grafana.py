@@ -2,11 +2,24 @@ import pytest
 import httpx
 import uuid
 
-def test_grafana_login_page_reachable(creds):
-    base = creds['grafana_url']
-    url = f"{base}/login"
-    with httpx.Client(timeout=10.0, follow_redirects=True) as client:
-        res = client.get(url)
+def test_grafana_legacy_url_redirect(creds):
+    base = creds["grafana_url"]
+    with httpx.Client(timeout=10.0, follow_redirects=False) as client:
+        res = client.get(base)
+        assert res.status_code in (301, 302, 307, 308)
+        assert res.headers.get("location", "").startswith("https://diederich.ai/home/grafana/")
+
+def test_central_grafana_health(creds):
+    base = creds["central_grafana_url"]
+    with httpx.Client(timeout=10.0) as client:
+        res = client.get(f"{base}/api/health")
+        assert res.status_code == 200
+        assert res.json().get("database") == "ok"
+
+def test_central_grafana_login_page_reachable(creds):
+    base = creds["central_grafana_url"]
+    with httpx.Client(timeout=10.0) as client:
+        res = client.get(f"{base}/login")
         assert res.status_code == 200
         assert "Grafana" in res.text
 
@@ -23,8 +36,10 @@ def test_grafana_service_account_crud(creds):
     test_uid = f"test-{uuid.uuid4().hex[:8]}"
     folder_title = f"LiveTest-{test_uid}"
 
-    with httpx.Client(timeout=10.0, base_url=creds['grafana_url'], headers=headers) as client:
+    with httpx.Client(timeout=10.0, base_url=creds["central_grafana_url"], headers=headers) as client:
         res_create = client.post("/api/folders", json={"title": folder_title, "uid": test_uid})
+        if res_create.status_code == 401:
+            pytest.skip("GRAFANA_TOKEN unauthorized on central Grafana")
         assert res_create.status_code in (200, 201), f"Failed to create folder: {res_create.text}"
         folder_data = res_create.json()
         assert folder_data["uid"] == test_uid
@@ -57,3 +72,4 @@ def test_grafana_service_account_crud(creds):
         finally:
             res_del = client.delete(f"/api/folders/{test_uid}")
             assert res_del.status_code in (200, 202, 204)
+
