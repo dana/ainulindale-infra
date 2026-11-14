@@ -46,6 +46,8 @@ spec:
               value: "https://diederich.ai/home/auth/google/callback"
             - name: HOME_ALLOWLIST_EMAILS
               value: "diederich@gmail.com,msdiederich@gmail.com"
+            - name: HOME_ADMIN_EMAILS
+              value: "diederich@gmail.com"
             - name: HOME_COMMON_DIR
               value: "/data/home-common"
             - name: HOME_ALERTA_UPSTREAM_URL
