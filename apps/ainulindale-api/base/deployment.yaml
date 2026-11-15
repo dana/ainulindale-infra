@@ -45,7 +45,7 @@ spec:
             - name: HOME_GOOGLE_OAUTH_REDIRECT_URI
               value: "https://diederich.ai/home/auth/google/callback"
             - name: HOME_ALLOWLIST_EMAILS
-              value: "diederich@gmail.com,msdiederich@gmail.com"
+              value: "diederich@gmail.com,msdiederich@gmail.com,noahmatters@gmail.com"
             - name: HOME_ADMIN_EMAILS
               value: "diederich@gmail.com"
             - name: HOME_COMMON_DIR
