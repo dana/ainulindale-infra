@@ -1,0 +1,38 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: super-productivity-ingress
+  namespace: super-productivity
+  labels:
+    app.kubernetes.io/name: super-productivity
+    app.kubernetes.io/part-of: super-productivity
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  ingressClassName: public
+  tls:
+    - hosts:
+        - tasks.diederich.ai
+        - tasks-sync.diederich.ai
+      secretName: super-productivity-tls
+  rules:
+    - host: tasks.diederich.ai
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: super-productivity-web
+                port:
+                  number: 80
+    - host: tasks-sync.diederich.ai
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: super-productivity-sync
+                port:
+                  number: 1900

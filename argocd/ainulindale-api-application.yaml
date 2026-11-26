@@ -19,6 +19,8 @@ spec:
       namespace: mongodb
     - server: https://kubernetes.default.svc
       namespace: tmtrack
+    - server: https://kubernetes.default.svc
+      namespace: super-productivity
   clusterResourceWhitelist:
     - group: ""
       kind: Namespace
