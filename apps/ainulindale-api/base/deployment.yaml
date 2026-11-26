@@ -36,6 +36,8 @@ spec:
             - secretRef:
                 name: eridian-echo-google-oauth
           env:
+            - name: ENABLE_ERIDIAN_ECHO
+              value: "false"
             - name: ERIDIAN_ECHO_PUBLIC_BASE_URL
               value: "https://diederich.ai"
             - name: GOOGLE_OAUTH_REDIRECT_URI
