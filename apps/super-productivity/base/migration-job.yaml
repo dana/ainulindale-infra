@@ -25,7 +25,13 @@ spec:
           command:
             - sh
             - -c
-            - sh scripts/migrate-deploy.sh
+            - |
+              echo "Waiting for postgres to accept connections..."
+              until nc -z -w 2 postgres 5432; do
+                sleep 2
+              done
+              echo "Postgres is reachable. Running migrations..."
+              sh scripts/migrate-deploy.sh
           env:
             - name: DATABASE_URL
               valueFrom:

@@ -47,7 +47,7 @@ spec:
             - name: ALLOWED_EMAILS
               value: "diederich@gmail.com"
             - name: TRUST_PROXY
-              value: "true"
+              value: "loopback,uniquelocal"
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
