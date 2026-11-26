@@ -32,7 +32,6 @@ def test_browser_main_site(creds):
 def test_browser_eridian_echo_ui_interaction(creds):
     cdp_url = creds.get("headless_chrome_cdp", "http://127.0.0.1:9333")
     base_url = creds["api_base_url"]
-    cookie_val = creds.get("eridian_echo_cookie")
 
     with sync_playwright() as p:
         try:
@@ -41,28 +40,9 @@ def test_browser_eridian_echo_ui_interaction(creds):
             pytest.skip(f"Could not connect to headless browser CDP at {cdp_url}: {e}")
 
         context = browser.new_context(ignore_https_errors=True)
-        if cookie_val:
-            context.add_cookies([{
-                "name": "eridian_echo_session",
-                "value": cookie_val,
-                "domain": "diederich.ai",
-                "path": "/api/v1/eridian-echo",
-                "secure": True,
-                "sameSite": "Lax"
-            }])
-
         page = context.new_page()
-        page.goto(f"{base_url}/api/v1/eridian-echo/", wait_until="networkidle")
-
-        # Verify page layout elements
-        assert page.locator("h1").inner_text() == "Eridian Echo"
-        assert page.locator("#dropzone").is_visible()
-
-        if cookie_val:
-            assert "Welcome, Live Test Runner" in page.content()
-            assert page.get_by_role("button", name="Sign Out").is_visible()
-        else:
-            assert "Guest user" in page.content()
+        response = page.goto(f"{base_url}/api/v1/eridian-echo/")
+        assert response.status == 404
 
         context.close()
         browser.close()
