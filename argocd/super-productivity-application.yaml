@@ -1,0 +1,34 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: super-productivity
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: super-productivity
+    app.kubernetes.io/instance: super-productivity
+    app.kubernetes.io/part-of: super-productivity
+spec:
+  project: ainulindale
+  source:
+    repoURL: https://github.com/dana/ainulindale-infra.git
+    targetRevision: main
+    path: apps/super-productivity/overlays/prod
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: super-productivity
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+      - PruneLast=true
+      - ServerSideApply=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m

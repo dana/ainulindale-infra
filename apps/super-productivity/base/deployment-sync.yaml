@@ -1,0 +1,113 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: super-productivity-sync
+  namespace: super-productivity
+  labels:
+    app.kubernetes.io/name: super-productivity
+    app.kubernetes.io/component: sync
+    app.kubernetes.io/part-of: super-productivity
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: super-productivity
+      app.kubernetes.io/component: sync
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: super-productivity
+        app.kubernetes.io/component: sync
+    spec:
+      containers:
+        - name: sync
+          image: ghcr.io/super-productivity/supersync:v20.1.0@sha256:ed76d4b4655e09afa58e8bb510742db96143c18e56f4855c53ed6e7d45e9060a
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 1900
+              protocol: TCP
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: PORT
+              value: "1900"
+            - name: PUBLIC_URL
+              value: "https://tasks-sync.diederich.ai"
+            - name: WEBAUTHN_RP_ID
+              value: "tasks-sync.diederich.ai"
+            - name: WEBAUTHN_ORIGIN
+              value: "https://tasks-sync.diederich.ai"
+            - name: CORS_ORIGINS
+              value: "https://tasks.diederich.ai"
+            - name: ALLOWED_EMAILS
+              value: "diederich@gmail.com"
+            - name: TRUST_PROXY
+              value: "loopback,uniquelocal"
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: super-productivity-secrets
+                  key: DATABASE_URL
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: super-productivity-secrets
+                  key: JWT_SECRET
+            - name: SMTP_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: super-productivity-secrets
+                  key: SMTP_HOST
+            - name: SMTP_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: super-productivity-secrets
+                  key: SMTP_PORT
+            - name: SMTP_SECURE
+              valueFrom:
+                secretKeyRef:
+                  name: super-productivity-secrets
+                  key: SMTP_SECURE
+            - name: SMTP_USER
+              valueFrom:
+                secretKeyRef:
+                  name: super-productivity-secrets
+                  key: SMTP_USER
+            - name: SMTP_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: super-productivity-secrets
+                  key: SMTP_PASS
+            - name: SMTP_FROM
+              valueFrom:
+                secretKeyRef:
+                  name: super-productivity-secrets
+                  key: SMTP_FROM
+          resources:
+            requests:
+              cpu: 200m
+              memory: 256Mi
+            limits:
+              cpu: 1000m
+              memory: 768Mi
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 1900
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /live
+              port: 1900
+            initialDelaySeconds: 15
+            periodSeconds: 15
+            timeoutSeconds: 3
+            failureThreshold: 3

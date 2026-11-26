@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: super-productivity
+  labels:
+    app.kubernetes.io/name: super-productivity
+    app.kubernetes.io/component: database
+    app.kubernetes.io/part-of: super-productivity
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  type: ClusterIP
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: 5432
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: super-productivity
+    app.kubernetes.io/component: database
