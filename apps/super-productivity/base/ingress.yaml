@@ -8,6 +8,7 @@ metadata:
     app.kubernetes.io/part-of: super-productivity
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
+    argocd.argoproj.io/sync-wave: "3"
 spec:
   ingressClassName: public
   tls:
